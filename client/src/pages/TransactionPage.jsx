@@ -2,21 +2,54 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import TransactionFormSkeleton from "../components/skeleton/TransactionSekeleton";
+import { useMutation, useQuery } from "@apollo/client";
+import {
+  GET_TRANSACTION_STATISTICS,
+  GET_TRANSPO,
+} from "../graphql/queries/transaction.query";
+import { UPDATE_TRANSACTION } from "../graphql/mutations/transaction.mutation";
 
 export default function TransactionPage() {
+  const { id } = useParams();
+  const { loading, data } = useQuery(GET_TRANSPO, {
+    variables: { id: id },
+  });
+
+  const [updateTransaction, { loading: loadingUpdate }] = useMutation(
+    UPDATE_TRANSACTION,
+    {
+      refetchQueries: [{ query: GET_TRANSACTION_STATISTICS }],
+    }
+  );
   const [formData, setFormData] = useState({
-    description: "",
-    paymentType: "",
-    category: "",
-    amount: "",
-    location: "",
-    date: "",
+    description: data?.transaction?.description || "",
+    paymentType: data?.transaction?.paymentType || "",
+    category: data?.transaction?.category || "",
+    amount: data?.transaction?.amount || "",
+    location: data?.transaction?.location || "",
+    date: data?.transaction?.date || "",
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(formData);
+    const amount = parseFloat(formData.amount); //covert string to number
+    try {
+     await updateTransaction({
+      variables: {
+        input:  {
+          ...formData,
+          amount,
+          transactionId: id,
+        }
+      }
+     }) 
+    } catch (error) {
+      
+    }
   };
+
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
@@ -24,16 +57,32 @@ export default function TransactionPage() {
       [name]: value,
     }));
   };
- 
- 
 
- 
+  useEffect(() => {
+    if (data) {
+      setFormData({
+        description: data?.transaction?.description,
+        paymentType: data?.transaction?.paymentType,
+        category: data?.transaction?.category,
+        amount: data?.transaction?.amount,
+        location: data?.transaction?.location,
+        date: new Date(+data.transaction.date).toISOString().substr(0, 10),
+
+      });
+    }
+  }, [data]);
+
+  if(loading) return <TransactionFormSkeleton />
+
   return (
     <div className="h-screen max-w-4xl mx-auto flex flex-col items-center">
       <p className="md:text-4xl text-2xl lg:text-4xl font-bold text-center relative z-50 mb-4 mr-4 bg-gradient-to-r from-pink-600 via-indigo-500 to-pink-400 inline-block text-transparent bg-clip-text">
         Update this Transaction
       </p>
-      <form className="w-full max-w-lg flex flex-col gap-5 px-3" onSubmit={handleSubmit}>
+      <form
+        className="w-full max-w-lg flex flex-col gap-5 px-3"
+        onSubmit={handleSubmit}
+      >
         <div className="flex flex-wrap">
           <div className="w-full">
             <label
@@ -100,8 +149,7 @@ export default function TransactionPage() {
                 id="category"
                 className="block apperance-none w-full bg-gray-200 text-gray-700 py-3 px-4 pr-8 rounded focus:outline-none focus:bg-white focus:border-gray-500"
                 defaultValue={formData.category}
-               onChange={handleInputChange}
-
+                onChange={handleInputChange}
               >
                 <option value="saving">Saving</option>
                 <option value="expense">Expense</option>
@@ -136,7 +184,6 @@ export default function TransactionPage() {
               className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3  px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
               value={formData.amount}
               onChange={handleInputChange}
-
             />
           </div>
         </div>
@@ -159,7 +206,6 @@ export default function TransactionPage() {
               className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3  px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
               value={formData.location}
               onChange={handleInputChange}
-
             />
           </div>
 
@@ -179,7 +225,6 @@ export default function TransactionPage() {
               className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3  px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
               value={formData.date}
               onChange={handleInputChange}
-
             />
           </div>
         </div>
@@ -188,8 +233,9 @@ export default function TransactionPage() {
         <button
           className="text-white font-bold w-full rounded px-4 py-2 bg-gradient-to-br
           from-pink-500 to-pink-500 hover:from-pink-600 hover:to-pink-600 hover:cursor-pointer"
-        >
-          Update Transaction
+        disabled={loadingUpdate}
+      >
+       {loadingUpdate ? "Updating..." : "Update Transaction"}
         </button>
       </form>
     </div>

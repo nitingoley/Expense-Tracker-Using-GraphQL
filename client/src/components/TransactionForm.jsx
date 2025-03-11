@@ -1,10 +1,38 @@
+import { useMutation } from "@apollo/client";
 import React from "react";
-
+import { CREATE_TRANSACTION } from "../graphql/mutations/transaction.mutation";
+import { toast } from "react-hot-toast";
 export default function TransactionForm() {
 
-const handleSubmit = (e)=>{
+  
+  const [createTransaction, { loading }] = useMutation(CREATE_TRANSACTION,{
+    refetchQueries: ['GetTransactions'],
+  });
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-}
+
+    const form = e.target;
+    const formData = new FormData(form);
+    const transactionData = {
+      description: formData.get("description"),
+      paymentType: formData.get("paymentType"),
+      category: formData.get("category"),
+      amount: Number(formData.get("amount")), 
+      location: formData.get("location"),
+      date: formData.get("date"),
+    };
+
+    try {
+      await createTransaction({ variables: { input: transactionData } });
+      form.reset();
+      toast.success("Transaction Added Successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
+
   return (
     <form
       className="w-full max-w-lg flex flex-col gap-5 px-3"
@@ -24,7 +52,6 @@ const handleSubmit = (e)=>{
             id="description"
             name="description"
             placeholder="Rent, Groceries, Salary, etc."
-            
           />
         </div>
       </div>
@@ -43,7 +70,6 @@ const handleSubmit = (e)=>{
               name="paymentType"
               id="paymentType"
               className="block apperance-none w-full bg-gray-200 text-gray-700 py-3 px-4 pr-8 rounded focus:outline-none focus:bg-white focus:border-gray-500"
-             
             >
               <option value="card">Card</option>
               <option value="cash">Cash</option>
@@ -73,7 +99,6 @@ const handleSubmit = (e)=>{
               name="category"
               id="category"
               className="block apperance-none w-full bg-gray-200 text-gray-700 py-3 px-4 pr-8 rounded focus:outline-none focus:bg-white focus:border-gray-500"
-             
             >
               <option value="saving">Saving</option>
               <option value="expense">Expense</option>
@@ -101,12 +126,11 @@ const handleSubmit = (e)=>{
           </label>
 
           <input
-            type="number"
             id="amount"
             name="amount"
+            type="number"
             placeholder="150"
             className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3  px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-             
           />
         </div>
       </div>
@@ -127,7 +151,6 @@ const handleSubmit = (e)=>{
             name="location"
             placeholder="Breilly"
             className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3  px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-           
           />
         </div>
 
@@ -145,7 +168,6 @@ const handleSubmit = (e)=>{
             name="date"
             placeholder="Select date"
             className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3  px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-             
           />
         </div>
       </div>
@@ -154,8 +176,9 @@ const handleSubmit = (e)=>{
       <button
         className="text-white font-bold w-full rounded px-4 py-2 bg-gradient-to-br
       from-pink-500 to-pink-500 hover:from-pink-600 hover:to-pink-600 hover:cursor-pointer"
+        disabled={loading}
       >
-        Add Transaction
+        {loading ? "Loading" : "Add Transaction"}
       </button>
     </form>
   );

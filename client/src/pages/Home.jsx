@@ -7,6 +7,8 @@ import TransactionForm from "../components/TransactionForm";
 import toast from "react-hot-toast";
 import { useMutation } from "@apollo/client";
 import { LOGOUT } from "../graphql/mutations/user.mutation";
+import Card from "../components/Card";
+import Cards from "../components/Cards";
 
 
 
@@ -96,6 +98,7 @@ export default function Home() {
           </div>
         <TransactionForm />
         </div>
+        <Cards />
       </div>
     </>
   );

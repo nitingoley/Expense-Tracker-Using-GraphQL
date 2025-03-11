@@ -14,13 +14,14 @@ export default function Signup() {
     gender: "",
   });
   
-  const [signup , {loading, error}] = useMutation(SIGN_UP , {
+  const [signup , {loading}] = useMutation(SIGN_UP , {
     refetchQueries: ['GetAuthenticatedUser'],
   })
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(signupData);
+    // console.log(signupData);
+    if(!name || !username || !password || !gender) return toast.error("All fields are required");
     try {
       await signup({
         variables: {
