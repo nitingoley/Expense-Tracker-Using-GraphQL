@@ -8,9 +8,9 @@ const userResolver = {
 			try {
 				const { username, name, password, gender } = input;
 
-				if (!username || !name || !password || !gender) {
-					throw new Error("All fields are required");
-				}
+				// if (!username || !name || !password || !gender) {
+				// 	throw new Error("All fields are required");
+				// }
 				const existingUser = await User.findOne({ username });
 				if (existingUser) {
 					throw new Error("User already exists");
