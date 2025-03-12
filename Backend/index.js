@@ -18,6 +18,7 @@ import mergedTypeDefs from "./typeDefs/index.js";
 
 import { connectDB } from "./db/db.config.js";
 import { configurePassport } from  "./passport/passport.config.js";
+ 
 
  
 
@@ -25,7 +26,7 @@ dotenv.config();
 configurePassport();
 
  
- 
+const __dirname = path.resolve();
 const app = express();
 
 const httpServer = http.createServer(app);
@@ -93,7 +94,15 @@ app.use(
 	})
 );
 
+
+app.use(express.static(path.join(__dirname, "client/dist")));
  
+
+app.use("*" , (req , res)=>{
+	res.sendFile(path.join(__dirname, "client/dist", "index.html"));
+})
+
+
 // Modified server startup
 await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
 await connectDB();

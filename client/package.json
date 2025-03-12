@@ -13,6 +13,7 @@
     "@apollo/client": "^3.9.5",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/vite": "^4.0.12",
+    "backend-postgressql": "file:..",
     "chart.js": "^4.4.1",
     "clsx": "^2.1.0",
     "expense-tracker-gql": "file:..",
