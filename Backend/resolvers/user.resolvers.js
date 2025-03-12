@@ -7,6 +7,7 @@ const userResolver = {
 		signUp: async (_, { input }, context) => {
 			try {
 				const { username, name, password, gender } = input;
+				console.log("Received input:", input); 
 
 				// if (!username || !name || !password || !gender) {
 				// 	throw new Error("All fields are required");
