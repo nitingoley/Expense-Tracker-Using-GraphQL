@@ -17,7 +17,7 @@ const categoryColorMap = {
   // Add more categories and corresponding color classes as needed
 };
 
-const Card = ({ transaction }) => {
+const Card = ({ transaction , authUser }) => {
   let { category, amount, location, date, paymentType, description } =
     transaction;
   const cardClass = categoryColorMap[category];
@@ -25,7 +25,7 @@ const Card = ({ transaction }) => {
   // 	refetchQueries: ["GetTransactions", "GetTransactionStatistics"],
   // });
   const [deleteTransaction, {loading}] = useMutation(DELETE_TRANSACTION , {
-    refetchQueries: ["GetTransactions"]
+    refetchQueries: ["GetTransactions", "GetTransactionStatistics"]
   });
 
   // Capitalize the first letter of the description
@@ -77,7 +77,7 @@ const Card = ({ transaction }) => {
         <div className="flex justify-between items-center">
           <p className="text-xs text-black font-bold">{formattedDate}</p>
           <img
-            src={"https://imgs.search.brave.com/o1DI6EhD35RccFke8l2y9TXT0XpeT7ImzSAzEVUzo_M/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMtcGxhdGZvcm0u/OTlzdGF0aWMuY29t/Ly9QQTJlVURKTFFn/SWdZVm9ScGE5bGRV/bzNkb3c9LzB4MDoy/MDAweDIwMDAvZml0/LWluLzUwMHg1MDAv/cHJvamVjdHMtZmls/ZXMvODYvODYwMC84/NjAwMjcvZjVmOTcz/ZDgtOWIyNC00MTM1/LWJhNWUtMjVmZWIw/MWRhNWI3LmpwZw"}
+            src={authUser.profilePicture}
             className="h-8 w-8 border rounded-full"
             alt=""
           />

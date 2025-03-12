@@ -18,7 +18,7 @@ export default function TransactionPage() {
   const [updateTransaction, { loading: loadingUpdate }] = useMutation(
     UPDATE_TRANSACTION,
     {
-      refetchQueries: [{ query: GET_TRANSACTION_STATISTICS }],
+      refetchQueries: ["GetTransactions" , "GetTransactionStatistics"],
     }
   );
   const [formData, setFormData] = useState({

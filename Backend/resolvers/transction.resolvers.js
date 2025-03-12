@@ -38,7 +38,7 @@ const transactionResolver = {
         }
         categoryMap[transaction.category] += transaction.amount;
        })
-        return Object.entries(categoryStats).map(([category, totalAmount]) => ({
+        return Object.entries(categoryMap).map(([category, totalAmount]) => ({
           category,
           totalAmount,
         }));
