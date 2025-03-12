@@ -21,7 +21,7 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // console.log(signupData);
-    if(!name || !username || !password || !gender) return toast.error("All fields are required");
+    // if(!name || !username || !password || !gender) return toast.error("All fields are required");
     try {
       await signup({
         variables: {
